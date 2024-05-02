@@ -1,5 +1,6 @@
 const std = @import("std");
 const Vec3 = @import("vec3.zig").Vec3;
+const Color = @import("color.zig");
 
 const ProgressPrinter = struct {
     progress_step: usize,
@@ -33,15 +34,12 @@ fn generate_image(writer: std.fs.File.Writer) !void {
     for (0..image_height) |j| {
         try progress.print(j);
         for (0..image_width) |i| {
-            const r: f64 = @as(f64, @floatFromInt(i)) / (image_width - 1);
-            const g: f64 = @as(f64, @floatFromInt(j)) / (image_height - 1);
-            const b: f64 = 0.0;
-
-            const ir = @as(u16, @intFromFloat(255.999 * r));
-            const ig = @as(u16, @intFromFloat(255.999 * g));
-            const ib = @as(u16, @intFromFloat(255.999 * b));
-
-            try writer.print("{} {} {}\n", .{ ir, ig, ib });
+            const pixel_color = Color.Color{
+                .x = @as(f64, @floatFromInt(i)) / (image_width - 1),
+                .y = @as(f64, @floatFromInt(j)) / (image_height - 1),
+                .z = 0.0,
+            };
+            try Color.write_color(writer, pixel_color);
         }
     }
     try std.io.getStdOut().writeAll("Done");
