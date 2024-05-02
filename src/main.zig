@@ -7,8 +7,14 @@ const Color = @import("color.zig");
 const Ray = @import("ray.zig").Ray;
 
 fn ray_color(ray: Ray) Color.Color {
-    _ = ray;
-    return Color.Color.init(0, 0, 0);
+    const unit_direction = Vec.unit_vector(ray.direction);
+    const alpha = 0.5 * (unit_direction.y + 1.0);
+    const lerp = blk: {
+        var lerp = Vec.multiply_vector(1.0 - alpha, Color.Color.init(1.0, 1.0, 1.0));
+        lerp.add(Vec.multiply_vector(alpha, Color.Color.init(0.1, 0.8, 0.8)));
+        break :blk lerp;
+    };
+    return lerp;
 }
 
 fn generate_image(writer: std.fs.File.Writer) !void {
