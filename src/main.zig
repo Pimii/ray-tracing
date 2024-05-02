@@ -1,23 +1,42 @@
 const std = @import("std");
 const ProgressPrinter = @import("progress_bar.zig").ProgressPrinter;
-const Vec3 = @import("vec3.zig").Vec3;
+const Properties = @import("properties.zig");
+const Vec = @import("vec3.zig");
+const Vec3 = Vec.Vec3;
 const Color = @import("color.zig");
+const Ray = @import("ray.zig").Ray;
+
+fn ray_color(ray: Ray) Color.Color {
+    _ = ray;
+    return Color.Color.init(0, 0, 0);
+}
 
 fn generate_image(writer: std.fs.File.Writer) !void {
-    const image_width: u16 = 256;
-    const image_height: u16 = 256;
-    const progress = ProgressPrinter.init(image_height);
+    const properties = Properties.Properties.init(Properties.default_width);
+    const progress = ProgressPrinter.init(properties.image_height);
 
-    try writer.print("P3\n{} {}\n255\n", .{ image_width, image_height });
+    try writer.print("P3\n{} {}\n255\n", .{ properties.image_width, properties.image_height });
 
-    for (0..image_height) |j| {
+    for (0..properties.image_height) |j| {
         try progress.print(j);
-        for (0..image_width) |i| {
-            const pixel_color = Color.Color{
-                .x = @as(f64, @floatFromInt(i)) / (image_width - 1),
-                .y = @as(f64, @floatFromInt(j)) / (image_height - 1),
-                .z = 0.0,
+        for (0..properties.image_width) |i| {
+            const pixel_center = blk: {
+                var horizontal_pixel = properties.pixel_delta_horizontal;
+                horizontal_pixel.multiply(@as(f64, @floatFromInt(i)));
+
+                var vertical_pixel = properties.pixel_delta_vertical;
+                vertical_pixel.multiply(@as(f64, @floatFromInt(j)));
+
+                var pixel_center = properties.pixel_starting_location;
+                pixel_center.add(horizontal_pixel);
+                pixel_center.add(vertical_pixel);
+
+                break :blk pixel_center;
             };
+            const ray_direction = Vec.subtract_vectors(pixel_center, Properties.camera_center);
+            const ray = Ray.init(Properties.camera_center, ray_direction);
+
+            const pixel_color = ray_color(ray);
             try Color.write_color(writer, pixel_color);
         }
     }

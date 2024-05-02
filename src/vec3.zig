@@ -13,19 +13,25 @@ pub const Vec3 = struct {
         };
     }
 
-    pub fn add(self: Vec3, vec: Vec3) void {
+    pub fn add(self: *Vec3, vec: Vec3) void {
         self.x += vec.x;
         self.y += vec.y;
         self.z += vec.z;
     }
 
-    pub fn multiply(self: Vec3, times: f64) void {
+    pub fn subtract(self: *Vec3, vec: Vec3) void {
+        self.x -= vec.x;
+        self.y -= vec.y;
+        self.z -= vec.z;
+    }
+
+    pub fn multiply(self: *Vec3, times: f64) void {
         self.x *= times;
         self.y *= times;
         self.z *= times;
     }
 
-    pub fn divide(self: Vec3, times: f64) void {
+    pub fn divide(self: *Vec3, times: f64) void {
         self.multiply(1 / times);
     }
 
@@ -69,8 +75,15 @@ pub fn multiply_vectors(vec1: Vec3, vec2: Vec3) Vec3 {
 }
 
 pub fn multiply_vector(times: f64, vec: Vec3) Vec3 {
-    vec.multiply(times);
-    return vec;
+    var result_vec = vec;
+    result_vec.multiply(times);
+    return result_vec;
+}
+
+pub fn divide_vector(times: f64, vec: Vec3) Vec3 {
+    var result_vec = vec;
+    result_vec.divide(times);
+    return result_vec;
 }
 
 pub fn dot(vec1: Vec3, vec2: Vec3) f64 {
@@ -86,6 +99,7 @@ pub fn cross(vec1: Vec3, vec2: Vec3) Vec3 {
 }
 
 pub fn unit_vector(vec: Vec3) Vec3 {
-    vec.divide(vec.len());
-    return vec;
+    var result_vec = vec;
+    result_vec.divide(vec.len());
+    return result_vec;
 }
