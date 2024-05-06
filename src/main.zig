@@ -4,7 +4,7 @@ const Properties = @import("properties.zig");
 const Vec = @import("vec3.zig");
 const Vec3 = Vec.Vec3;
 const Point3 = Vec.Point3;
-const Color = @import("color.zig");
+const Color = @import("color.zig").Color;
 const Ray = @import("ray.zig").Ray;
 const Render = @import("render.zig");
 
@@ -34,7 +34,7 @@ fn generate_image(writer: std.fs.File.Writer) !void {
             const ray = Ray.init(Properties.camera_center, ray_direction);
 
             const pixel_color = Render.ray_color(ray);
-            try Color.write_color(writer, pixel_color);
+            try pixel_color.write(writer);
         }
     }
     try std.io.getStdOut().writeAll("Done");
