@@ -5,7 +5,7 @@ const Point3 = Vec.Point3;
 pub const default_width: u16 = 400;
 pub const camera_center = Point3.init(0, 0, 0);
 
-const aspect_ratio: f16 = 16.0 / 10.0;
+const aspect_ratio: f16 = 16.0 / 9.0;
 const focal_length: f16 = 1.0;
 const viewport_height: f16 = 2.0;
 

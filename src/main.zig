@@ -3,10 +3,23 @@ const ProgressPrinter = @import("progress_bar.zig").ProgressPrinter;
 const Properties = @import("properties.zig");
 const Vec = @import("vec3.zig");
 const Vec3 = Vec.Vec3;
+const Point3 = Vec.Point3;
 const Color = @import("color.zig");
 const Ray = @import("ray.zig").Ray;
 
+fn hit_sphere(center: Point3, radius: f64, ray: Ray) bool {
+    const oc = Vec.subtract_vectors(center, ray.origin);
+    const a = Vec.dot(ray.direction, ray.direction);
+    const b = -2.0 * Vec.dot(ray.direction, oc);
+    const c = Vec.dot(oc, oc) - radius * radius;
+    const discriminant = b * b - 4 * a * c;
+    return discriminant >= 0;
+}
+
 fn ray_color(ray: Ray) Color.Color {
+    if (hit_sphere(Point3.init(0, 0, -1), 0.5, ray)) {
+        return Color.Color.init(1, 0, 0);
+    }
     const unit_direction = Vec.unit_vector(ray.direction);
     const alpha = 0.5 * (unit_direction.y + 1.0);
     const lerp = blk: {

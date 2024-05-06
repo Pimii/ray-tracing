@@ -25,6 +25,12 @@ pub const Vec3 = struct {
         self.z -= vec.z;
     }
 
+    pub fn subtract_value(self: *Vec3, value: f64) void {
+        self.x -= value;
+        self.y -= value;
+        self.z -= value;
+    }
+
     pub fn multiply(self: *Vec3, times: f64) void {
         self.x *= times;
         self.y *= times;
